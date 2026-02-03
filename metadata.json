@@ -1,0 +1,5 @@
+{
+  "name": "NeuroBalance PPO",
+  "description": "A browser-based Reinforcement Learning environment training a CartPole agent using Proximal Policy Optimization (PPO) and TensorFlow.js, featuring Gemini-powered training analysis.",
+  "requestFramePermissions": []
+}
