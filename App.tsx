@@ -12,7 +12,8 @@ import {
   Hand,
   Save
 } from 'lucide-react';
-import { PPOAgent } from './services/ppo';
+import { DQNAgent } from './services/dqn';
+import { PPOAgent } from './services/ppo'; // For future expansion
 import { CartPole, State } from './services/cartpole';
 import { analyzeTrainingPerformance } from './services/geminiService';
 import { SimulationCanvas } from './components/SimulationCanvas';
@@ -45,7 +46,7 @@ const App: React.FC = () => {
   // --- Refs for Simulation Loop ---
   const requestRef = useRef<number>();
   const cartPoleRef = useRef(new CartPole());
-  const agentRef = useRef<PPOAgent | null>(null);
+  const agentRef = useRef<DQNAgent | PPOAgent | null>(null);
   const episodeRewardRef = useRef(0);
   const stepCountRef = useRef(0);
   const trainingDataRef = useRef<{
@@ -63,7 +64,9 @@ const App: React.FC = () => {
   useEffect(() => {
     const initTF = async () => {
       await tf.ready();
-      agentRef.current = new PPOAgent(4, 2); // 4 inputs (state), 2 outputs (left/right)
+      // agentRef.current = new DQNAgent(4, 2); // 4 inputs (state), 2 outputs (left/right)
+      // console.log('TF.js ready, DQN Agent initialized');
+      agentRef.current = new PPOAgent(4, 2); // For future expansion, currently using PPOAgent
       console.log('TF.js ready, PPO Agent initialized');
     };
     initTF();
@@ -231,6 +234,7 @@ const App: React.FC = () => {
     // Reset agent
     if (agentRef.current) {
       agentRef.current.dispose();
+      // agentRef.current = new DQNAgent(4, 2); 
       agentRef.current = new PPOAgent(4, 2);
     }
     setCurrentModel(undefined);
@@ -248,7 +252,7 @@ const App: React.FC = () => {
       try {
         await agentRef.current.save(name);
         setRefreshModelsTrigger(prev => prev + 1); // Trigger refresh in list
-        alert("Model saved successfully!");
+        alert("PPO Model saved successfully!");
       } catch (err) {
         console.error(err);
         alert("Failed to save model.");
@@ -378,16 +382,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {/* Training Indicator */}
-            {isTraining && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-20 pointer-events-none">
-                <div className="flex flex-col items-center gap-4 animate-pulse">
-                  <BrainCircuit className="w-16 h-16 text-indigo-400" />
-                  <h2 className="text-2xl font-bold text-indigo-400">Training Neural Network...</h2>
-                  <p className="text-slate-300">Optimizing Policy & Value Heads</p>
-                </div>
-              </div>
-            )}
+
 
             {/* Current Model Indicator */}
             {currentModel && (
@@ -442,8 +437,8 @@ const App: React.FC = () => {
                 <button
                   onClick={() => setTrainingEnabled(true)}
                   className={`px-3 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${trainingEnabled
-                      ? 'bg-emerald-600 text-white shadow'
-                      : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-emerald-600 text-white shadow'
+                    : 'text-slate-400 hover:text-slate-200'
                     }`}
                   title="Enable Training (Learning)"
                 >
@@ -453,8 +448,8 @@ const App: React.FC = () => {
                 <button
                   onClick={() => setTrainingEnabled(false)}
                   className={`px-3 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${!trainingEnabled
-                      ? 'bg-blue-600 text-white shadow'
-                      : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-blue-600 text-white shadow'
+                    : 'text-slate-400 hover:text-slate-200'
                     }`}
                   title="Disable Training (Test/Inference)"
                 >
@@ -541,7 +536,7 @@ const App: React.FC = () => {
               <Activity className="w-5 h-5 text-indigo-400" />
               Learning Curve
             </h3>
-            <div className="w-full h-64">
+            <div className="w-full h-64 min-w-[200px] min-h-[200px]">
               <TrainingChart data={rewardHistory} />
             </div>
           </div>

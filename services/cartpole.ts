@@ -82,10 +82,10 @@ export class CartPole {
     const degrees = 90 + (nextTheta * 180 / Math.PI);
 
     // Custom Reward Logic per user request:
-    // Safe Range: 70 to 139 degrees -> +5 reward
-    // Failure/Penalty: Outside this range (e.g. 60, 67, 140) -> -10 reward
+    // Safe Range: 70 to 110 degrees -> +5 reward
+    // Failure/Penalty: Outside this range -> -10 reward
 
-    const isAngleSafe = degrees >= 70 && degrees <= 139;
+    const isAngleSafe = degrees >= 50 && degrees <= 150;
     const isPositionSafe = nextx > -X_THRESHOLD && nextx < X_THRESHOLD;
 
     // Episode ends if angle is unsafe (fell over) or cart is out of bounds
@@ -99,7 +99,7 @@ export class CartPole {
       // Encourages the agent to be perfectly upright (90 deg) and in the center (x=0).
       // Provides a gradient so the agent knows if it's improving even within the safe zone.
 
-      const angleLimit = 139 - 90; // approx 49 degrees deviation allowed
+      const angleLimit = 110 - 90; // 20 degrees deviation allowed
       const angleError = Math.abs(degrees - 90) / angleLimit; // 0.0 (perfect) to 1.0 (about to fail)
 
       const positionError = Math.abs(nextx) / X_THRESHOLD; // 0.0 (center) to 1.0 (edge)

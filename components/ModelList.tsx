@@ -32,6 +32,7 @@ export const ModelList: React.FC<ModelListProps> = ({ onLoad, onDelete, currentM
     const handleDelete = async (name: string) => {
         if (confirm(`Are you sure you want to delete model "${name}"?`)) {
             try {
+
                 await PPOAgent.deleteModel(name);
                 await fetchModels();
                 if (onDelete) onDelete(name);

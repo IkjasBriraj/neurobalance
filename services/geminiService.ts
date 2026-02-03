@@ -8,11 +8,11 @@ export const analyzeTrainingPerformance = async (rewardHistory: { episode: numbe
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    
+
     // Sample the last 50 episodes to keep prompt size manageable
     const recentHistory = rewardHistory.slice(-50);
     const dataStr = JSON.stringify(recentHistory);
-    
+
     // Max steps = 500, Reward per step = 5. Max potential reward approx 2500.
     const prompt = `
       I am training a Reinforcement Learning agent (PPO) to balance a CartPole.
